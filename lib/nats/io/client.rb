@@ -1380,31 +1380,17 @@ module NATS
 
       def process_uri(uris)
         connect_uris = []
-        uris.split(',').each do |uri|
-          opts = {}
-
-          # Scheme
-          if uri.include?("://")
-            scheme, uri = uri.split("://")
-            opts[:scheme] = scheme
-          else
-            opts[:scheme] = 'nats'
+        uris.split(",").each do |uri|
+          unless uri.include?("://")
+            uri = "nats://#{uri}"
           end
 
-          # UserInfo
-          if uri.include?("@")
-            userinfo, endpoint = uri.split("@")
-            host, port = endpoint.split(":")
-            opts[:userinfo] = userinfo
-          else
-            host, port = uri.split(":")
-          end
+          uri = URI.parse(uri)
 
-          # Host and Port
-          opts[:host] = host || "localhost"
-          opts[:port] = port || DEFAULT_PORT
+          uri.host ||= "localhost"
+          uri.port ||= DEFAULT_PORT
 
-          connect_uris << URI::Generic.build(opts)
+          connect_uris << uri
         end
         connect_uris
       end
