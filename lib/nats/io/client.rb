@@ -1423,7 +1423,7 @@ module NATS
       end
 
       def connect
-        addrinfo = ::Socket.getaddrinfo(@uri.host, nil, ::Socket::AF_UNSPEC, ::Socket::SOCK_STREAM)
+        addrinfo = ::Socket.getaddrinfo(@uri.hostname, nil, ::Socket::AF_UNSPEC, ::Socket::SOCK_STREAM)
         addrinfo.each_with_index do |ai, i|
           begin
             @socket = connect_addrinfo(ai, @uri.port, @connect_timeout)
