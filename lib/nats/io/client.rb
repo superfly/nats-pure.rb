@@ -663,42 +663,42 @@ module NATS
             info
           end
 
-          # Detect any announced server that we might not be aware of...
-          connect_urls = @server_info[:connect_urls]
-          if connect_urls
-            srvs = []
-            connect_urls.each do |url|
-              scheme = client_using_secure_connection? ? "tls" : "nats"
-              u = URI.parse("#{scheme}://#{url}")
+          # # Detect any announced server that we might not be aware of...
+          # connect_urls = @server_info[:connect_urls]
+          # if connect_urls
+          #   srvs = []
+          #   connect_urls.each do |url|
+          #     scheme = client_using_secure_connection? ? "tls" : "nats"
+          #     u = URI.parse("#{scheme}://#{url}")
 
-              # Skip in case it is the current server which we already know
-              next if @uri.host == u.host && @uri.port == u.port
+          #     # Skip in case it is the current server which we already know
+          #     next if @uri.host == u.host && @uri.port == u.port
 
-              present = server_pool.detect do |srv|
-                srv[:uri].host == u.host && srv[:uri].port == u.port
-              end
+          #     present = server_pool.detect do |srv|
+          #       srv[:uri].host == u.host && srv[:uri].port == u.port
+          #     end
 
-              if not present
-                # Let explicit user and pass options set the credentials.
-                u.user = options[:user] if options[:user]
-                u.password = options[:pass] if options[:pass]
+          #     if not present
+          #       # Let explicit user and pass options set the credentials.
+          #       u.user = options[:user] if options[:user]
+          #       u.password = options[:pass] if options[:pass]
 
-                # Use creds from the current server if not set explicitly.
-                if @uri
-                  u.user ||= @uri.user if @uri.user
-                  u.password ||= @uri.password if @uri.password
-                end
+          #       # Use creds from the current server if not set explicitly.
+          #       if @uri
+          #         u.user ||= @uri.user if @uri.user
+          #         u.password ||= @uri.password if @uri.password
+          #       end
 
-                # NOTE: Auto discovery won't work here when TLS host verification is enabled.
-                srv = { :uri => u, :reconnect_attempts => 0, :discovered => true, :hostname => u.host }
-                srvs << srv
-              end
-            end
-            srvs.shuffle! unless @options[:dont_randomize_servers]
+          #       # NOTE: Auto discovery won't work here when TLS host verification is enabled.
+          #       srv = { :uri => u, :reconnect_attempts => 0, :discovered => true, :hostname => u.host }
+          #       srvs << srv
+          #     end
+          #   end
+          #   srvs.shuffle! unless @options[:dont_randomize_servers]
 
-            # Include in server pool but keep current one as the first one.
-            server_pool.push(*srvs)
-          end
+          #   # Include in server pool but keep current one as the first one.
+          #   server_pool.push(*srvs)
+          # end
         end
 
         @server_info
